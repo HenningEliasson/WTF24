@@ -4,7 +4,7 @@ Slutprojekt 2024 Webbserverprogrammering.
 
 ##  Uppgiftsbeskrivning
 
-Nu är det dags för att bygga en större applikation med hjälp av de tekniker vi har lärt oss i kursen Webbserverprogrammering. Syftet är att du ska lära dig att använda dina kunskaper för att bygga en webbapplikation med både front-end och back-end. Att ha kunskaper inom back-end-utveckling ger dig stora fördelar i livet om du tex ska bygga applikationer som sparar data och har användare med konton. Skulle du fortsätta med front-end (bara webbdesign) är det också väldigt meriterande att ha viss förståelse för vad som händer back-end. Både när du utvecklar själv men även när du kommunicerar med andra utvecklare.
+weweoeowoowoeoeoe
 
 Du kommer även under arbetets gång få hjälp med hur du kan göra utvecklingen/koden snyggare, bättre och lättare att hantera. Tex att separera olika funktionalitet eller tips för att testa koden. 
 
