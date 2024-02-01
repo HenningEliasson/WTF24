@@ -14,19 +14,19 @@ class Seeder
 
     def self.db
         return @db if @db
-        @db = SQLite3::Database.new('db/Databas.sqlite')
+        @db = SQLite3::Database.new('db/videogames.db')
         @db.results_as_hash = true
         return @db
     end
 
-    def self.drop_tables
+   # def self.drop_tables
         puts "  * Dropping Tables"
         db.execute('DROP TABLE IF EXISTS bordett')
     end
     
     
     def self.create_tables
-        puts "  * Creating tables"
+    puts "  * Creating tables"
         db.execute('CREATE TABLE "Bordett" (
             "id"	INTEGER UNIQUE,
             "Sak"	TEXT,
