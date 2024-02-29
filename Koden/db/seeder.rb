@@ -71,6 +71,13 @@ class Seeder
             "publisher_name"	TEXT DEFAULT NULL,
             PRIMARY KEY("id")
         );') 
+        db.execute('CREATE TABLE "comment" (
+            "id"	INTEGER,
+            "user_id"	INTEGER,
+            "game_id"	INTEGER,
+            "com_text"	TEXT,
+            PRIMARY KEY("id" AUTOINCREMENT)'
+        );
     end
     
     def self.seed_data

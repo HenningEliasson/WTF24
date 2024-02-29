@@ -20,9 +20,20 @@ class Databas < Sinatra::Base
     end
 
     get '/:genres/:game_name' do |genres, game_name|
+        @name = game_name
 
         erb :main
     end
+
+    post '/:genres/:game_name' do  |genres, game_name|
+        gen_id = db.execute("SELECT id FROM genres WHERE id = ?", genres)
+        game_id = db.execute("SELECT id FROM game WHERE id = ?", game_name)
+
+        com = params['words'] 
+        query = 'INSERT INTO comment (com) VALUES (?) RETURNING id'
+        result = db.execute(query, name).first  
+        redirect "/#{genres}/#{game_name}"
+      end
 end
 
 
