@@ -15,7 +15,13 @@ class Databas < Sinatra::Base
     get '/:genres' do |genres|
         middle = db.execute("SELECT id FROM genre WHERE genre_name = ?", genres).first 
         @game = db.execute("SELECT * FROM game WHERE genre_id =  ?", middle['id']) 
+        @genres = genres
         erb :gamelist
+    end
+
+    get '/:genres/:game_name' do |genres, game_name|
+
+        erb :main
     end
 end
 
