@@ -1,6 +1,10 @@
 <h1><%=@name%></h1>
 
 <form action='/<%=@genres%>/<%=@name%>' method="POST">
-  <input type='text' com="words" placeholder="comment something"></input>
+  <input type='text' name="words" placeholder="comment something"></input>
   <button type='submit'>SUBMIT</button>
 </form>
+
+<%@comments.each do |comment|%>
+<h3><%=comment['com_text']%></h3>
+<%end%>
