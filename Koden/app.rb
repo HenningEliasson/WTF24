@@ -1,4 +1,16 @@
+require 'slugify'
+
 class Databas < Sinatra::Base
+
+    helpers do
+        def h(text)
+            Rack::Utils.escape_html(text)
+          end
+        
+          def hattr(text)
+            Rack::Utils.escape_path(text)
+          end
+    end
 
     def db
         return @db if @db
@@ -19,23 +31,21 @@ class Databas < Sinatra::Base
         erb :gamelist
     end
 
-    get '/:genres/:game_name' do |genres, game_name|
-        @name = game_name
+    get '/:genres/:ids' do |genres,ids|
         @genres = genres 
-        game = db.execute("SELECT id FROM game WHERE game_name = ?", game_name).first
-        game_id = game['id']
-
-        @comments = db.execute("SELECT com_text FROM comment WHERE game_id = ?", game_id)
+        @id = ids
+        @game = db.execute("SELECT game_name FROM game WHERE id = ?", ids).first
+        @comments = db.execute("SELECT com_text FROM comment WHERE game_id = ?", ids)
         erb :main
     end
 
-    post '/:genres/:game_name' do  |genres, game_name|
-        game = db.execute("SELECT id FROM game WHERE game_name = ?", game_name).first
-        game_id = game['id']
+    post "/:genres/:ids" do  |genres, ids|
+        @id = ids
+        @game = db.execute("SELECT game_name FROM game WHERE id = ?", ids).first
         user_id = 1
         com_text = params['words'] 
-        result = db.execute('INSERT INTO comment (user_id,game_id,com_text) VALUES (?,?,?) RETURNING id', user_id,game_id,com_text).first  
-        redirect "/#{genres}/#{game_name}"
+        result = db.execute("INSERT INTO comment (user_id,game_id,com_text) VALUES (?,?,?) RETURNING id", user_id,ids,com_text).first  
+        redirect "/#{genres}/#{ids}"
     end
 end
 
