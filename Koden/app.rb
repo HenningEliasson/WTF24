@@ -20,18 +20,32 @@ class Databas < Sinatra::Base
     end
 
     get '/' do
+
+        erb :user
+    end
+
+    post "/" do 
+        password = params['password']
+        username = params['username'] 
+        if #skapa en if sats som gör att man inet alltid gör ett nytt konto
+        result = db.execute("INSERT INTO users (username, password) VALUES (?,?) RETURNING id", username, password).first 
+        $user_id = db.execute("SELECT id FROM users WHERE username = ?", username).first
+        redirect "/home"
+    end
+
+    get '/home' do
         @gen = db.execute("SELECT * FROM genre") 
         erb :index
     end
 
-    get '/:genres' do |genres|
+    get '/home/:genres' do |genres|
         middle = db.execute("SELECT id FROM genre WHERE genre_name = ?", genres).first 
         @game = db.execute("SELECT * FROM game WHERE genre_id =  ?", middle['id']) 
         @genres = genres
         erb :gamelist
     end
 
-    get '/:genres/:ids' do |genres,ids|
+    get '/home/:genres/:ids' do |genres,ids|
         @genres = genres 
         @id = ids
         @game = db.execute("SELECT game_name FROM game WHERE id = ?", ids).first
@@ -39,13 +53,13 @@ class Databas < Sinatra::Base
         erb :main
     end
 
-    post "/:genres/:ids" do  |genres, ids|
+    post "/home/:genres/:ids" do  |genres, ids|
         @id = ids
         @game = db.execute("SELECT game_name FROM game WHERE id = ?", ids).first
-        user_id = 1
+        user_id = $user_id
         com_text = params['words'] 
         result = db.execute("INSERT INTO comment (user_id,game_id,com_text) VALUES (?,?,?) RETURNING id", user_id,ids,com_text).first  
-        redirect "/#{genres}/#{ids}"
+        redirect "/home/#{genres}/#{ids}"
     end
 end
 
