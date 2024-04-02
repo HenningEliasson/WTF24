@@ -1,5 +1,4 @@
 require 'slugify'
-
 class Databas < Sinatra::Base
 
     helpers do
@@ -26,9 +25,21 @@ class Databas < Sinatra::Base
 
     post "/" do 
         password = params['password']
-        username = params['username'] 
-        if #skapa en if sats som gör att man inet alltid gör ett nytt konto
-        result = db.execute("INSERT INTO users (username, password) VALUES (?,?) RETURNING id", username, password).first 
+        username = params['username']
+        past = db.execute("SELECT * FROM users")
+        past.each do |name|
+            unam = name['username']
+            passw = name['password']
+            if unam == username &&  passw == password
+                break
+            elsif unam == username && passw =! password
+                raise "wrong password"  
+            elsif unam =! username && passw =! password
+                result = db.execute("INSERT INTO users (username, password) VALUES (?,?) RETURNING id", username, password).first
+            end
+            #FIXA!
+        end
+        
         $user_id = db.execute("SELECT id FROM users WHERE username = ?", username).first
         redirect "/home"
     end
@@ -49,16 +60,15 @@ class Databas < Sinatra::Base
         @genres = genres 
         @id = ids
         @game = db.execute("SELECT game_name FROM game WHERE id = ?", ids).first
-        @comments = db.execute("SELECT com_text FROM comment WHERE game_id = ?", ids)
+        @comments = db.execute("SELECT * FROM comment WHERE game_id = ?", ids)
         erb :main
     end
 
     post "/home/:genres/:ids" do  |genres, ids|
         @id = ids
         @game = db.execute("SELECT game_name FROM game WHERE id = ?", ids).first
-        user_id = $user_id
         com_text = params['words'] 
-        result = db.execute("INSERT INTO comment (user_id,game_id,com_text) VALUES (?,?,?) RETURNING id", user_id,ids,com_text).first  
+        result = db.execute("INSERT INTO comment (user_id,game_id,com_text) VALUES (?,?,?) RETURNING id", $user_id,ids,com_text).first  
         redirect "/home/#{genres}/#{ids}"
     end
 end

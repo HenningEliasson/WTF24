@@ -6,5 +6,5 @@
 </form>
 
 <%@comments.each do |comment|%>
-<h3><%=comment['com_text']%></h3>
+<h3><%=comment['com_text']%><%=comment['user_id']%><%=$user_id%></h3>
 <%end%>
