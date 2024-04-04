@@ -6,5 +6,8 @@
 </form>
 
 <%@comments.each do |comment|%>
-<h3><%=comment['com_text']%><%=comment['user_id']%><%=$user_id%></h3>
+<%id = comment['user_id']%>
+<%commenter = db.execute("SELECT username FROM users WHERE id = ?", id).first%>
+<h2><%=commenter['username']%> </h2><h3><%=comment['com_text']%></h3> 
+<p>------------------------------------------------------------------------ </p>
 <%end%>

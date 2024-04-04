@@ -20,7 +20,7 @@ class Databas < Sinatra::Base
 
     get '/' do
 
-        erb :user
+        erb :index
     end
 
     post "/" do 
@@ -31,22 +31,49 @@ class Databas < Sinatra::Base
             unam = name['username']
             passw = name['password']
             if unam == username &&  passw == password
-                break
-            elsif unam == username && passw =! password
-                raise "wrong password"  
-            elsif unam =! username && passw =! password
-                result = db.execute("INSERT INTO users (username, password) VALUES (?,?) RETURNING id", username, password).first
+                $user_id = db.execute("SELECT id FROM users WHERE username = ?", username).first
+                redirect "/home"
             end
-            #FIXA!
         end
-        
+        redirect "/wrong" 
+    end
+
+    post '/new_here' do
+        username = params['new_username']
+        password = params['new_password']
+        past = db.execute("SELECT * FROM users")
+        past.each do |name|
+            unam = name['username']
+            if unam == username
+               redirect "/wrong2"
+            end
+        end
+        result = db.execute("INSERT INTO users (username, password) VALUES (?,?) RETURNING id", username, password).first 
         $user_id = db.execute("SELECT id FROM users WHERE username = ?", username).first
-        redirect "/home"
+        redirect '/home'
+    end
+
+    get '/wrong' do
+
+        erb :wrong
+    end
+
+    post '/wrong' do
+        redirect "/"
+    end
+
+    get '/wrong2' do
+
+        erb :wrong2
+    end
+
+    post '/wrong2' do
+        redirect "/"
     end
 
     get '/home' do
         @gen = db.execute("SELECT * FROM genre") 
-        erb :index
+        erb :genres
     end
 
     get '/home/:genres' do |genres|
@@ -66,9 +93,13 @@ class Databas < Sinatra::Base
 
     post "/home/:genres/:ids" do  |genres, ids|
         @id = ids
+        id_user = $user_id['id']
         @game = db.execute("SELECT game_name FROM game WHERE id = ?", ids).first
         com_text = params['words'] 
-        result = db.execute("INSERT INTO comment (user_id,game_id,com_text) VALUES (?,?,?) RETURNING id", $user_id,ids,com_text).first  
+        if com_text == ''
+            redirect "/home/#{genres}/#{ids}"
+        end
+        result = db.execute("INSERT INTO comment (user_id,game_id,com_text) VALUES (?,?,?) RETURNING id", id_user,ids,com_text).first  
         redirect "/home/#{genres}/#{ids}"
     end
 end
