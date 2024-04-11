@@ -1,6 +1,8 @@
 require 'slugify'
 class Databas < Sinatra::Base
 
+    enable :sessions
+
     helpers do
         def h(text)
             Rack::Utils.escape_html(text)
@@ -23,7 +25,7 @@ class Databas < Sinatra::Base
         erb :index
     end
 
-    post "/" do 
+    post '/' do 
         password = params['password']
         username = params['username']
         past = db.execute("SELECT * FROM users")
@@ -31,7 +33,7 @@ class Databas < Sinatra::Base
             unam = name['username']
             passw = name['password']
             if unam == username &&  passw == password
-                $user_id = db.execute("SELECT id FROM users WHERE username = ?", username).first
+                session[:user_id] = db.execute("SELECT id FROM users WHERE username = ?", username).first
                 redirect "/home"
             end
         end
@@ -49,7 +51,7 @@ class Databas < Sinatra::Base
             end
         end
         result = db.execute("INSERT INTO users (username, password) VALUES (?,?) RETURNING id", username, password).first 
-        $user_id = db.execute("SELECT id FROM users WHERE username = ?", username).first
+        session[:user_id] = db.execute("SELECT id FROM users WHERE username = ?", username).first
         redirect '/home'
     end
 
@@ -68,7 +70,7 @@ class Databas < Sinatra::Base
     end
 
     post '/wrong2' do
-        redirect "/"
+        redirect '/'
     end
 
     get '/home' do
@@ -80,7 +82,34 @@ class Databas < Sinatra::Base
         middle = db.execute("SELECT id FROM genre WHERE genre_name = ?", genres).first 
         @game = db.execute("SELECT * FROM game WHERE genre_id =  ?", middle['id']) 
         @genres = genres
+        @user_id = session[:user_id]['id']
         erb :gamelist
+    end
+
+    get '/add' do
+
+        erb :add
+    end 
+
+    post '/add' do
+        game_name = params['game_name']
+        genre_id = params['genre_id']
+        past = db.execute("SELECT * FROM game")
+        past.each do |name|
+            gnam = name['game_name']
+            if gnam == game_name
+               redirect "/wrong_game"
+            end
+        end
+        result = db.execute("INSERT INTO game (game_name, genre_id) VALUES (?,?) RETURNING id", game_name, genre_id).first 
+    end
+
+    get '/wrong_game' do
+        erb :wrong_game
+    end
+
+    post '/wrong_game' do
+        redirect '/add'
     end
 
     get '/home/:genres/:ids' do |genres,ids|
@@ -93,7 +122,7 @@ class Databas < Sinatra::Base
 
     post "/home/:genres/:ids" do  |genres, ids|
         @id = ids
-        id_user = $user_id['id']
+        id_user = session[:user_id]['id']
         @game = db.execute("SELECT game_name FROM game WHERE id = ?", ids).first
         com_text = params['words'] 
         if com_text == ''

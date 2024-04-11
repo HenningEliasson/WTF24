@@ -1,3 +1,9 @@
+<%if @user_id == 1%>
+    <form action='/add' method="GET">
+        <button type='submit'>Add Game</button>
+    </form>
+<%end%>
+
 <% @game.each do |names|%>
-<h2><a href="/home/<%= @genres %>/<%= names['id']%>"><%= h names['game_name'] %></a></h2>
+    <h2><a href="/home/<%= @genres %>/<%= names['id']%>"><%= h names['game_name'] %></a></h2>
 <%end%>
