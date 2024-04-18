@@ -55,6 +55,11 @@ class Databas < Sinatra::Base
         redirect '/home'
     end
 
+    post '/guest' do
+        session[:user_id] = 0
+        redirect '/home'
+    end
+
     get '/wrong' do
 
         erb :wrong
@@ -80,9 +85,12 @@ class Databas < Sinatra::Base
 
     get '/home/:genres' do |genres|
         middle = db.execute("SELECT id FROM genre WHERE genre_name = ?", genres).first 
-        @game = db.execute("SELECT * FROM game WHERE genre_id =  ?", middle['id']) 
+        @game = db.execute("SELECT * FROM game WHERE genre_id =  ? ORDER BY game_name ASC", middle['id']) 
         @genres = genres
-        @user_id = session[:user_id]['id']
+        if session[:user_id] =! 0
+            @user_id = session[:user_id]['id']
+        end
+        
         erb :gamelist
     end
 
