@@ -85,7 +85,7 @@ class Databas < Sinatra::Base
 
     get '/home/:genres' do |genres|
         middle = db.execute("SELECT id FROM genre WHERE genre_name = ?", genres).first 
-        @game = db.execute("SELECT * FROM game WHERE genre_id =  ? ORDER BY game_name ASC", middle['id']) 
+        @game_genre = db.execute("SELECT game_id FROM game_genre WHERE genre_id =  ?", middle['id']).first
         @genres = genres
         if session[:user_id] =! 0
             @user_id = session[:user_id]['id']
@@ -100,16 +100,18 @@ class Databas < Sinatra::Base
     end 
 
     post '/add' do
-        game_name = params['game_name']
-        genre_id = params['genre_id']
-        past = db.execute("SELECT * FROM game")
-        past.each do |name|
-            gnam = name['game_name']
-            if gnam == game_name
-               redirect "/wrong_game"
+        if session[:user_id]['id'] == 1
+            game_name = params['game_name']
+            genre_id = params['genre_id']
+            past = db.execute("SELECT * FROM game")
+            past.each do |name|
+                gnam = name['game_name']
+                if gnam == game_name
+                   redirect "/wrong_game"
+                end
             end
-        end
-        result = db.execute("INSERT INTO game (game_name, genre_id) VALUES (?,?) RETURNING id", game_name, genre_id).first 
+            result = db.execute("INSERT INTO game (game_name, genre_id) VALUES (?,?) RETURNING id", game_name, genre_id).first
+        end 
     end
 
     get '/wrong_game' do

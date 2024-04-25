@@ -5,8 +5,8 @@ class Seeder
 
     def self.seed!
         puts "Seeding the DB"
-        #drop_tables
-        #create_tables
+        drop_tables
+        create_tables
         seed_data
         puts "Seed complete"
     end
@@ -63,17 +63,17 @@ class Seeder
         games.each do |game|
             db.execute("INSERT INTO game (id, genre_id, game_name) VALUES (?,?,?)" game['id'], game['genre_id'], game['game_name'])
         end
-        genre = CSV.readlines("db/genre.csv", headers: true)
-        genre.each do |genre|
+        genres = CSV.readlines("db/genre.csv", headers: true)
+        genres.each do |genre|
             db.execute("INSERT INTO genre (id, genre_name) VALUES (?,?)" genre['id'], genre['genre_name'])
         end
         comment = CSV.readlines("db/comment.csv", headers: true)
         comment.each do |com|
             db.execute("INSERT INTO comment (id, user_id, game_id, com_text) VALUES (?,?,?,?)" com['id'], com['user_id'], com['game_id'], com['com_text'])
         end
-        user = CSV.readlines("db/user.csv", headers: true)
-        user.each do |user|
-            db.execute("INSERT INTO user (id, username, password) VALUES (?,?,?)" game['id'], game['username'], game['password'])
+        users = CSV.readlines("db/user.csv", headers: true)
+        users.each do |user|
+            db.execute("INSERT INTO user (id, username, password) VALUES (?,?,?)" user['id'], user['username'], user['password'])
         end
         puts "  * Seeding tables"
     end
