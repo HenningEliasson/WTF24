@@ -1,4 +1,5 @@
 require 'slugify'
+require 'debug'
 class Databas < Sinatra::Base
 
     enable :sessions
@@ -33,7 +34,7 @@ class Databas < Sinatra::Base
             unam = name['username']
             passw = name['password']
             if unam == username &&  passw == password
-                session[:user_id] = db.execute("SELECT id FROM users WHERE username = ?", username).first
+                session[:user_id] = db.execute("SELECT id FROM users WHERE username = ?", username).first['id']
                 redirect "/home"
             end
         end
@@ -84,11 +85,11 @@ class Databas < Sinatra::Base
     end
 
     get '/home/:genres' do |genres|
-        middle = db.execute("SELECT id FROM genre WHERE genre_name = ?", genres).first 
-        @game_genre = db.execute("SELECT game_id FROM game_genre WHERE genre_id =  ?", middle['id']).first
         @genres = genres
-        if session[:user_id] =! 0
-            @user_id = session[:user_id]['id']
+        middle = db.execute("SELECT * FROM genre WHERE genre_name = ?", genres).first
+        @game = db.execute("SELECT * FROM game WHERE genre_id = ? ORDER BY game_name ASC", middle['id'])
+        if session[:user_id] != 0
+            @user_id = session[:user_id]
         end
         
         erb :gamelist

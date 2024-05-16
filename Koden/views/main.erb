@@ -8,8 +8,8 @@
 <%end%>
 
 <%@comments.each do |comment|%>
-<%id = comment['user_id']%>
-<%commenter = db.execute("SELECT username FROM users WHERE id = ?", id).first%>
-<h2><%=commenter['username']%> </h2><h3><%=comment['com_text']%></h3> 
-<p>------------------------------------------------------------------------ </p>
+  <%id = comment['user_id']%>
+  <%commenter = db.execute("SELECT username FROM users WHERE id = ?", id).first%>
+  <h2><%=commenter['username']%></h2> <h3><%=comment['com_text']%></h3> 
+  <hr>
 <%end%>
