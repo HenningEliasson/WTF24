@@ -29,16 +29,13 @@ class Databas < Sinatra::Base
     post '/' do 
         password = params['password']
         username = params['username']
-        past = db.execute("SELECT * FROM users")
-        past.each do |name|
-            unam = name['username']
-            passw = name['password']
-            if unam == username &&  passw == password
-                session[:user_id] = db.execute("SELECT id FROM users WHERE username = ?", username).first['id']
-                redirect "/home"
-            end
+        past = db.execute("SELECT * FROM users WHERE (username, password) = (?,?)", username, password)
+        if past != nil
+            session[:user_id] = db.execute("SELECT id FROM users WHERE username = ?", username).first['id']
+            redirect "/home"
+        else
+            redirect "/wrong"
         end
-        redirect "/wrong" 
     end
 
     post '/new_here' do
@@ -52,7 +49,7 @@ class Databas < Sinatra::Base
             end
         end
         result = db.execute("INSERT INTO users (username, password) VALUES (?,?) RETURNING id", username, password).first 
-        session[:user_id] = db.execute("SELECT id FROM users WHERE username = ?", username).first
+        session[:user_id] = db.execute("SELECT id FROM users WHERE username = ?", username).first['id']
         redirect '/home'
     end
 
@@ -101,17 +98,17 @@ class Databas < Sinatra::Base
     end 
 
     post '/add' do
-        if session[:user_id]['id'] == 1
+        if session[:user_id] == 1
             game_name = params['game_name']
-            genre_id = params['genre_id']
-            past = db.execute("SELECT * FROM game")
-            past.each do |name|
-                gnam = name['game_name']
-                if gnam == game_name
-                   redirect "/wrong_game"
-                end
+            gnam = db.execute("SELECT * FROM game WHERE game_name = ?", game_name)
+            if gnam == game_name
+                redirect "/wrong_game"
             end
-            result = db.execute("INSERT INTO game (game_name, genre_id) VALUES (?,?) RETURNING id", game_name, genre_id).first
+            genre_ids = params['genre']
+            for a in genre_ids
+                result = db.execute("INSERT INTO game (game_name, genre_id) VALUES (?,?) RETURNING id", game_name, a).first
+            end
+            redirect "/home"
         end 
     end
 
@@ -133,13 +130,16 @@ class Databas < Sinatra::Base
 
     post "/home/:genres/:ids" do  |genres, ids|
         @id = ids
-        id_user = session[:user_id]['id']
+        id_user = session[:user_id]
         @game = db.execute("SELECT game_name FROM game WHERE id = ?", ids).first
+        all_id = db.execute("SELECT id FROM game WHERE game_name = ?", @game[0])
         com_text = params['words'] 
         if com_text == ''
             redirect "/home/#{genres}/#{ids}"
         end
-        result = db.execute("INSERT INTO comment (user_id,game_id,com_text) VALUES (?,?,?) RETURNING id", id_user,ids,com_text).first  
+        for a in all_id
+            result = db.execute("INSERT INTO comment (user_id,game_id,com_text) VALUES (?,?,?) RETURNING id", id_user,a['id'],com_text).first 
+        end 
         redirect "/home/#{genres}/#{ids}"
     end
 end

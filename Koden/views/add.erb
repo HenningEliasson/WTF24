@@ -1,5 +1,17 @@
 <form action='/add' method="POST">
-  <input type='text' name="game_name" placeholder="Insert Game Name"></input>
-  <input type='number' name="genre_id" placeholder="Insert Genre Id"></input>
+  <input type='text' name="game_name" placeholder="Insert Game Name"></input><br>
+  <h2> Genre </h2>
+  <input type='checkbox' name="genre[]" value="1">Action</input><br>
+  <input type='checkbox' name="genre[]" value="2">Adventure</input><br>
+  <input type='checkbox' name="genre[]" value="3">Fighting</input><br>
+  <input type='checkbox' name="genre[]" value="4">Misc</input><br>
+  <input type='checkbox' name="genre[]" value="5">Platform</input><br>
+  <input type='checkbox' name="genre[]" value="6">Puzzle</input><br>
+  <input type='checkbox' name="genre[]" value="7">Racing</input><br>
+  <input type='checkbox' name="genre[]" value="8">Role-playing</input><br>
+  <input type='checkbox' name="genre[]" value="9">Shooter</input><br>
+  <input type='checkbox' name="genre[]" value="10">Simulation</input><br>
+  <input type='checkbox' name="genre[]" value="11">Sport</input><br>
+  <input type='checkbox' name="genre[]" value="12">Strategy</input><br>
   <button type='submit'>Add Game</button>
 </form>

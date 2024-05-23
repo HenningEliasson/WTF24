@@ -1,6 +1,6 @@
 <h1><%=@game[0]%></h1>
 
-<%if @user_id =! 0%>
+<%if session[:user_id] != 0%>
 <form action='/home/<%=@genres%>/<%= @id %>' method="POST">
   <input type='text' name="words" placeholder="comment something"></input>
   <button type='submit'>SUBMIT</button>
